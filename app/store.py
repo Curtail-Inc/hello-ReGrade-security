@@ -77,6 +77,19 @@ def create_app():
             abort(404)
         return _json(_sanitize(u))  # sanitized — the clean baseline
 
+    @app.patch("/users/<int:uid>")
+    def rename_user(uid):
+        u = users.get(uid)
+        if u is None:
+            abort(404)
+        body = request.get_json(silent=True) or {}
+        if "display_name" in body:
+            u["display_name"] = body["display_name"]
+        # BUG (CVE-2023-5968 shape): returns the FULL stored user, incl. password hash.
+        # The GET paths call _sanitize(); this one forgets to. That single omission is
+        # the entire vulnerability.
+        return _json(u)
+
     @app.get("/channels")
     def list_channels():
         return _json({"channels": channels})
