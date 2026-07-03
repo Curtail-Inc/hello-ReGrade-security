@@ -1,10 +1,11 @@
 # ABOUTME: A tiny team-chat API with one planted flaw (added in Task 3). Passwords are
 # ABOUTME: bcrypt-hashed inside create_app(), so every instance holds unique salts.
 import json
+import secrets
 from datetime import datetime, timezone
 
 import bcrypt
-from flask import Flask, Response, abort
+from flask import Flask, Response, abort, request
 
 # Seed users carry PLAINTEXT demo passwords; create_app() hashes them at boot with a
 # fresh random salt, so two instances hold different hashes for the same password.
@@ -53,6 +54,17 @@ def create_app():
     @app.get("/health")
     def health():
         return _json({"ok": True})
+
+    @app.post("/login")
+    def login():
+        body = request.get_json(silent=True) or {}
+        for u in users.values():
+            if u["username"] == body.get("username") and bcrypt.checkpw(
+                body.get("password", "").encode(), u["password"].encode()
+            ):
+                # Random session token → fresh every call (noise to ID-MAP).
+                return _json({"token": secrets.token_hex(16), "user_id": u["id"]})
+        abort(401)
 
     @app.get("/users")
     def list_users():

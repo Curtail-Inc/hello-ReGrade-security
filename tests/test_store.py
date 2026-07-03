@@ -46,3 +46,18 @@ def test_sanitize_strips_password():
         "id": 1,
         "display_name": "A",
     }
+
+
+def test_login_returns_fresh_token():
+    c = _client()
+    r1 = c.post("/login", json={"username": "alice", "password": "correct-horse"})
+    r2 = c.post("/login", json={"username": "alice", "password": "correct-horse"})
+    assert r1.status_code == r2.status_code == 200
+    assert r1.get_json()["user_id"] == 1
+    # Random per call → legitimate noise that must be ID-mapped, not dropped blindly.
+    assert r1.get_json()["token"] != r2.get_json()["token"]
+
+
+def test_login_wrong_password_401():
+    r = _client().post("/login", json={"username": "alice", "password": "nope"})
+    assert r.status_code == 401
