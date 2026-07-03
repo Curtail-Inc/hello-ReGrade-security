@@ -1,0 +1,17 @@
+# ABOUTME: Two IDENTICAL instances — record against instance-a (:8001), replay against
+# ABOUTME: instance-b (:8002). Same image, no version: the leak is latent in both.
+services:
+  instance-a:
+    build: .
+    container_name: hello-regrade-security-a
+    environment:
+      PORT: "8000"
+    ports:
+      - "8001:8000"
+  instance-b:
+    build: .
+    container_name: hello-regrade-security-b
+    environment:
+      PORT: "8000"
+    ports:
+      - "8002:8000"
