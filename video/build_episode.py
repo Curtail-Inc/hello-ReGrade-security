@@ -20,14 +20,18 @@ def chunk_cues(word_frames, fps, max_words=7):
     return cues
 
 
-def build_episode(script_path, timestamps_path, fps=24, width=1920, height=1080):
+def build_episode(script_path, timestamps_path, fps=24, width=1920, height=1080, tail_pad_sec=1.8):
     beats = load_script(script_path)
     ts = json.loads(open(timestamps_path).read())["beats"]
     out_beats, all_cues, offset_frames = [], [], 0
-    for b in beats:
+    for i, b in enumerate(beats):
         info = ts[b.id]
         dur = info["duration"]
         duration_frames = max(1, round(dur * fps))
+        # Hold the final card after its voiceover finishes, so the closing URL lands
+        # in full before the fade-to-black (and -shortest never clips the last word).
+        if i == len(beats) - 1:
+            duration_frames += round(tail_pad_sec * fps)
         out_beats.append({"id": b.id, "clip": b.clip, "durationFrames": duration_frames})
         wf = words_to_frames(info.get("words", []), fps, offset_frames)
         all_cues.extend(chunk_cues(wf, fps))

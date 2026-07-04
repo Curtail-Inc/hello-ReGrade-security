@@ -18,7 +18,7 @@ FADE_ST=$(awk -v d="$VDUR" 'BEGIN{printf "%.1f", d-4}')
 ffmpeg -y -i out/silent.mp4 -i capture/voiceover_norm.mp3 -i capture/music.mp3 \
   -filter_complex "\
 [2:a]aformat=channel_layouts=stereo,afade=t=in:d=2,afade=t=out:st=${FADE_ST}:d=4,volume=0.22[mq];\
-[1:a]aformat=channel_layouts=stereo,asplit=2[vo][sc];\
+[1:a]aformat=channel_layouts=stereo,apad=whole_dur=${VDUR},asplit=2[vo][sc];\
 [mq][sc]sidechaincompress=threshold=0.02:ratio=6:attack=20:release=600[duck];\
 [vo][duck]amix=inputs=2:duration=first:normalize=0[mix];\
 [mix]alimiter=limit=0.97[out]" \
