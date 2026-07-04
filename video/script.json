@@ -1,0 +1,15 @@
+{
+  "fps": 24,
+  "width": 1920,
+  "height": 1080,
+  "beats": [
+    {"id": "cold-open", "clip": "01-cold-open.mp4", "vo": "This is a real vulnerability. It hid in a production service for seven years — leaking password hashes through an ordinary API. Every unit test passed. Every code review approved it. Here's how ReGrade, from Curtail, would have caught it on day one."},
+    {"id": "problem", "clip": "02-problem.mp4", "vo": "Tests check what you expect. You write an assertion for every behavior you can think of. But nobody writes a test for a bug they don't know exists — so the bugs you never imagined sail straight through. ReGrade works differently. It doesn't check expectations. It compares behavior."},
+    {"id": "setup", "clip": "03-setup.mp4", "vo": "Here's the trick: there's no version two. We run two identical copies of the same service, and record an ordinary test suite against the first. The tests make no security assertions — they log in, read a user, rename one. To record, we point them at ReGrade with a single environment variable. They pass, unchanged. Then we replay that traffic against the second copy — the very same code — and ReGrade finds fifteen differences."},
+    {"id": "noise", "clip": "04-noise.mp4", "vo": "In Claude Code, we ask it to walk us through the replay. The fifteen differences fall into three buckets: a login token, some timestamps, and a password field. The token and the timestamps are exactly what you'd expect to differ between two runs — a fresh session, a fresh clock. So we tell ReGrade: map the token, and drop the timestamps."},
+    {"id": "twist", "clip": "05-twist.mp4", "vo": "But look closely. The token and the password hash look alike — both long, random strings that change every single run. It's tempting to wave them both away as noise. That's the trap. One is a session token you can safely map. The other is a secret your users trusted you to protect. You can't tell them apart by the fact that they changed — you have to look at what changed."},
+    {"id": "reveal", "clip": "06-reveal.mp4", "vo": "We replay once more, with the profile. The token is mapped, the timestamps are gone — and one difference remains: the password field. A bcrypt hash, returned in an API response, from the rename endpoint. That's the leak — the shape of C-V-E twenty twenty-three, fifty-nine sixty-eight. ReGrade found it comparing the app to itself, from ordinary traffic, with no security test in sight."},
+    {"id": "why-tests-miss", "clip": "07-why.mp4", "vo": "Why did seven years of tests miss this? Because a test can only check what someone thought to assert. Detecting the unknown is a different capability — and it's the one ReGrade adds. So here's the question: if your existing tests could find the vulnerabilities they were never written for, what would they find?"},
+    {"id": "outro", "clip": "08-outro.mp4", "vo": "Point your own tests at ReGrade and see. Create a free account at curtail dot com — no credit card, and free every month. And you can run this exact demo yourself at github dot com slash Curtail dash Inc slash hello dash ReGrade dash security."}
+  ]
+}
